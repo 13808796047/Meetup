@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Home;
 
+use App\Model\Issue;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -13,10 +14,8 @@ class IndexController extends Controller
      */
     public function index()
     {
-        $issues = [
-            ['title'=>'PHP Loves'],
-            ['title'=>'Rails and Laravel']
-        ];
+        $issues = Issue::orderBy('created_at','desc')->paginate(5);
+
         return view ('home.index.index')->with('issues',$issues);
     }
 
