@@ -14,7 +14,7 @@ class IndexController extends Controller
      */
     public function index()
     {
-        $issues = Issue::orderBy('created_at','desc')->paginate(5);
+        $issues = Issue::orderBy('created_at','desc')->take(5)->get();
 
         return view ('home.index.index')->with('issues',$issues);
     }

@@ -30,6 +30,5 @@
                 @endforeach
             </ul>
         </div>
-        {{$issues->links()}}
     </div>
 </div>

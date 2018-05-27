@@ -636,3 +636,155 @@ Issue.php模型中，加上content白名单
 
 protected $fillable = ['title', 'content'];
 这样再来提交，操作成功了。
+# 笔记六
+
+全13回  2018年04月26日 发布
+The PHP Framework For Web Artisans，laravel 是适合艺术家来使用的 web 框架，一切东西都要尽可能的完美。
+laravel 是目前世界上最流行的 php开发框架。
+
+适合观众
+学习本课程，你不一定要多会 php。有其他编程语言基础，特别是一些会面向对象编程的更好。也不需要你先掌握 css 和 js ，但是最少要懂一点 html。
+
+课程非常适合 web 开发的初学者来学习，也适合已经会用 thinkphp 或其他 php 框架的同学学习。如果你之前是使用 python 、 ruby 或者 java 、 c# 来开发 web ，现在想学习 php开发，那本课程也是非常适合你的。
+
+内容介绍
+手把手教你用 laravel 打造一个 精美的web 应用程序。
+
+课程中不用你制作乏味的静态页面，所有的页面模板我都已经准备好了，你只要改改就行。
+也没有晦涩难懂的概念，上手就是干，自己动手一步步制作一个聚会的网站，可以发布聚会信息，参与者可以发表评论。
+
+每一个知识点都是为了解决实际开发中碰到的一个个问题。坚决反对死学理论知识，不实际动手的学习方法。一切知识都应该在实践中学习掌握。
+
+手把手带你做一个真实的项目，让你对 web 开发，对 laravel 框架的使用有一个最清晰的认识。只有自己动手做出项目来了，有了成就感，对开发有了兴趣，你才能真正的学会这一门艺术。
+
+好的，让我们携手一起步入世界上最流行的 web 开发框架之一-laravel的世界。
+
+项目Github地址
+你可以从这里得到完整的项目源码。html模板，请依照视频课程切换到html分支中。
+https://github.com/AaronRyuu/laravel_meetup
+
+课程讨论QQ群
+课程中有任何问题，你可以在讨论群中提出。但有提问，知无不言。
+武汉PHP-前端学习交流 76093078（临时）
+
+超简单的Laravel新手入门教程（全13回）
+第1回
+2017/10/25
+
+【课程介绍】
+第2回
+2017/11/16
+
+【开发环境Mac篇】
+第3回
+2017/11/16
+
+【开发环境Windows篇】
+第4回
+2017/11/16
+
+【The Laravel Way】
+第5回
+2017/11/16
+
+【笨办法发消息】
+第6回
+2017/11/16
+
+【数据的仓库】
+第7回
+2017/11/16
+
+【瞄准一个东东来 CURD】
+第8回
+2017/11/16
+
+【网站的耳朵】
+第9回
+2017/11/16
+
+【天啊，一大堆issues（分页）】
+第10回
+2017/11/16
+
+【更新一个资源】
+第11回
+2017/11/16
+
+【Code Beauty（Resource Controllers）】
+第12回
+2017/11/16
+
+【添加评论】
+第13回
+2017/11/16
+
+【Until Next Time, Goodbye!】
+数据库中目前只有几个活动信息。假如不断有用户发布新的活动，但是首页只能显示最新发布的两个活动。显示太多了首页也不好看啊，这就是一个大问题了。
+这一集，我们添加一个index页面，用它来显示所有的活动。
+
+添加一大堆issues
+
+
+先使用我们上一集做好的新增功能，往数据库中插入10条以上数据。
+
+修改链接
+layouts/app.blade.php布局模板中，修改活动的链接地址
+
+<a href="{{route('issues.index')}}">活动</a>
+route
+web.php中，添加index页面的路由
+
+Route::get('issues', 'IssuesController@index')->name('issues.index');
+controller
+public function index()
+{
+    $issues = Issue::orderBy('created_at', 'desc')->get();
+    return view('issues.index')->with('issues', $issues);
+}
+Tips: 在查询完数据库，我们习惯性首先 return $issues;，确认所查询的数据是完全正确的，再删除掉这条代码。
+
+增加一个index页面
+复制issues_index.html到views/issues目录下，改名为index.blade.php
+处理布局模板。
+删除重复的<li>...</li>标签，只保留一条<li>...</li>。
+foreach循环li标签，显示正确的活动信息。
+ @foreach($issues as $issue)
+    <li class="am-g am-list-item-desced am-list-item-thumbed am-list-item-thumb-left">
+        <div class="am-u-sm-2 am-u-md-1 am-list-thumb">
+            <a href="{{route('issues.show', $issue->id)}}">
+                <img src="assets/img/avatar1.png" alt=""/>
+            </a>
+        </div>
+
+        <div class="am-u-sm-7 am-u-md-9 am-list-main">
+            <h3 class="am-list-item-hd">
+                <a href="{{route('issues.show', $issue->id)}}" class="">{{$issue->title}}</a>
+            </h3>
+
+            <div class="am-list-item-text">
+                <span class="am-badge am-badge-secondary am-radius">read</span>
+                <span class="meta-data">Aaron</span>
+                3 days ago
+            </div>
+        </div>
+        <div class="am-u-sm-3 am-u-md-2 issue-comment-count">
+            <span class="am-icon-comments"></span>
+            <a href="{{route('issues.show', $issue->id)}}">2</a>
+        </div>
+    </li>
+@endforeach
+分页
+现在看起来已经非常好了，不过随着用户发布的活动越来越多，一页就显示不下了。
+这就需要用到分页来处理了，https://laravel.com/docs/5.5/pagination
+
+在laravel中，分页相当的容易。
+
+1.修改controller，将之前查询用的get()，改为paginate(5)。
+这里5的意思是说，每页显示5条数据。
+
+$issues = Issue::orderBy('created_at', 'desc')->paginate(5);
+2.issues/index.blade.php中，用{{ $issues->links() }}，代替之前写死的分页代码。
+
+
+浏览一下，perfect！
