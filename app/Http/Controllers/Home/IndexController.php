@@ -13,7 +13,11 @@ class IndexController extends Controller
      */
     public function index()
     {
-        return view ('home.index.index');
+        $issues = [
+            ['title'=>'PHP Loves'],
+            ['title'=>'Rails and Laravel']
+        ];
+        return view ('home.index.index')->with('issues',$issues);
     }
 
     /**

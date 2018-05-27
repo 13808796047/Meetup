@@ -16,7 +16,7 @@
 <header class="am-topbar am-topbar-fixed-top">
     <div class="am-container">
         <h1 class="am-topbar-brand">
-            <a href="index.html">Meetup</a>
+            <a href="/">Meetup</a>
         </h1>
 
         <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-secondary am-show-sm-only"
@@ -26,7 +26,7 @@
         <div class="am-collapse am-topbar-collapse" id="collapse-head">
             <ul class="am-nav am-nav-pills am-topbar-nav">
                 <li><a href="issues_index.html">活动</a></li>
-                <li><a href="about.html">关于</a></li>
+                <li><a href="/about">关于</a></li>
             </ul>
 
             <div class="am-topbar-right">
