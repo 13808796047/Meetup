@@ -8,7 +8,7 @@
                 <p>到时聚聚、聊聊程序</p>
 
                 <p>
-                    <a href="issues_create.html" class="am-btn am-btn-default am-btn-secondary">发布新活动</a>
+                    <a href="{{route('issues.create')}}" class="am-btn am-btn-default am-btn-secondary">发布新活动</a>
                 </p>
             </div>
         </div>

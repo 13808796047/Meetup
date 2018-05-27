@@ -328,3 +328,311 @@ Tips:
 再到 _issue_list.blade.php 中在稍作修改就好了。
 
 {{$issue->title}}
+# 笔记四
+
+全13回  2018年04月26日 发布
+The PHP Framework For Web Artisans，laravel 是适合艺术家来使用的 web 框架，一切东西都要尽可能的完美。
+laravel 是目前世界上最流行的 php开发框架。
+
+适合观众
+学习本课程，你不一定要多会 php。有其他编程语言基础，特别是一些会面向对象编程的更好。也不需要你先掌握 css 和 js ，但是最少要懂一点 html。
+
+课程非常适合 web 开发的初学者来学习，也适合已经会用 thinkphp 或其他 php 框架的同学学习。如果你之前是使用 python 、 ruby 或者 java 、 c# 来开发 web ，现在想学习 php开发，那本课程也是非常适合你的。
+
+内容介绍
+手把手教你用 laravel 打造一个 精美的web 应用程序。
+
+课程中不用你制作乏味的静态页面，所有的页面模板我都已经准备好了，你只要改改就行。
+也没有晦涩难懂的概念，上手就是干，自己动手一步步制作一个聚会的网站，可以发布聚会信息，参与者可以发表评论。
+
+每一个知识点都是为了解决实际开发中碰到的一个个问题。坚决反对死学理论知识，不实际动手的学习方法。一切知识都应该在实践中学习掌握。
+
+手把手带你做一个真实的项目，让你对 web 开发，对 laravel 框架的使用有一个最清晰的认识。只有自己动手做出项目来了，有了成就感，对开发有了兴趣，你才能真正的学会这一门艺术。
+
+好的，让我们携手一起步入世界上最流行的 web 开发框架之一-laravel的世界。
+
+项目Github地址
+你可以从这里得到完整的项目源码。html模板，请依照视频课程切换到html分支中。
+https://github.com/AaronRyuu/laravel_meetup
+
+课程讨论QQ群
+课程中有任何问题，你可以在讨论群中提出。但有提问，知无不言。
+武汉PHP-前端学习交流 76093078（临时）
+
+超简单的Laravel新手入门教程（全13回）
+第1回
+2017/10/25
+
+【课程介绍】
+第2回
+2017/11/16
+
+【开发环境Mac篇】
+第3回
+2017/11/16
+
+【开发环境Windows篇】
+第4回
+2017/11/16
+
+【The Laravel Way】
+第5回
+2017/11/16
+
+【笨办法发消息】
+第6回
+2017/11/16
+
+【数据的仓库】
+第7回
+2017/11/16
+
+【瞄准一个东东来 CURD】
+第8回
+2017/11/16
+
+【网站的耳朵】
+第9回
+2017/11/16
+
+【天啊，一大堆issues（分页）】
+第10回
+2017/11/16
+
+【更新一个资源】
+第11回
+2017/11/16
+
+【Code Beauty（Resource Controllers）】
+第12回
+2017/11/16
+
+【添加评论】
+第13回
+2017/11/16
+
+【Until Next Time, Goodbye!】
+现在有了 issue 也就是活动信息这个东东，后面就开始对他 Create Update Read Delete 了。
+
+这一集只是开始，瞄准 issue的展示和删除 。 关于 CURD 比较详细的解释，参考 https://laravel.com/docs/5.5/eloquent#inserting-and-updating-models
+
+issue的展示
+
+
+添加 content 到 issue
+首先运行一下 migration
+
+php artisan make:migration add_content_to_issues_table --table=issues
+修改migration文件
+
+class AddContentToIssuesTable extends Migration
+{
+    public function up()
+    {
+        Schema::table('issues', function (Blueprint $table) {
+            $table->text('content');
+        });
+    }
+
+    public function down()
+    {
+        Schema::table('issues', function (Blueprint $table) {
+            $table->dropColumn('content');
+        });
+    }
+}
+别忘了php artisan migrate，来跑一下迁移命令。
+
+Tips: down里面写的是 up的反操作。将来如果写错了，将来可以通过php artisan migrate:rollback这一条命令来回滚对数据库的操作。
+
+插入一下数据
+下面打开 php artisan tinker
+
+use App\Models\Issue
+$i = Issue::find(1)
+$i->content = "The PHP Framework For Web Artisans"
+$i->save()
+
+$i = Issue::find(2)
+$i->content = "Imagine what you could build if you learned Ruby on Rails ..."
+$i->save()
+添加路由
+在web.php中加上
+
+Route::get('issues/{issue}', 'IssuesController@show');
+到 _issue_list.blade.php 中添加指向 IssuesController@show 页面的链接
+
+<a href="/issues/{{$issue->id}}">{{$issue->title}}</a>
+访问一下，屏幕提示IssuesController does not exist，相信你一看到这个提示，就应该知道下面我们应该做什么了。
+
+新建控制器
+php artisan make:controller IssuesController -r
+控制器中会自动生成7个方法，分别用来处理 issues 的CURD操作了。
+先得到 IssuesController 中
+
+public function show($id)
+{
+    return $id;
+}
+这样敲链接 http://127.0.0.1:8000/issues/1 页面上就显示 1，敲 http://127.0.0.1:8000/issues/2 的时候页面就显示 2。
+那这个 $id 的作用也就清楚了。当然这只是处于调试目的，所以这一行可以删掉。
+
+重点注意：首先要来use这个模型
+
+use App\Models\Issue;
+public function show($id)
+{
+    $issue = Issue::find($id);
+    return view('issues.show')->with('issue', $issue);
+}
+添加show页面
+下面就是要填充 views/issues/show.blade.php 中的内容了。这样 show 页面中再添加合适的 php 语句就可以展示清楚了。
+
+在resources/views中新建一个issues文件夹
+将issues_show.html模板放入issues目录中，并改名为show.blade.php。
+访问一下，确认能正常显示。修改图片的路径为<img src="/...。使用布局模板。
+将以前写死的数据，换成我们从数据库中读取的内容。
+<!-- 标题 -->
+ <div class="issue-heading">
+    ... 
+    {{$issue->title}}
+    ...
+</div>
+
+<!-- 内容 -->
+<div class="am-comment-bd">{{$issue->content}}</div>
+使用命名路由
+但是再来稍微优化一些代码。到 _issue_list.blade.php，修改/issues/{{$issue->id}}为
+
+{{route('issues.show', $issue->id)}}
+这样当然会报错，这是laravel 提供了给路由起名字的机制，叫 named route，需要做的就是到 web.php 中
+
+Route::get('issues/{issue}', 'IssuesController@show')->name('issues.show');
+现在就行了。
+
+删除一个资源
+现在就来看如果删除一个资源。还是从 view 中的链接开始写。在 issues/show.blade.php 中添加删除的链接地址。
+
+<a href="{{route('issues.destroy', $issue->id)}}" ...>Destroy</a>
+对应的 web.php路由 中要添加
+
+Route::delete('issues/{issue}', 'IssuesController@destroy')->name('issues.destroy');
+点击删除后，发现依然跳转到了当前页面，这是因为我们路由中定义的是delete动作，而普通的链接依旧是get的请求方式。
+
+我们需要使用一个js插件来解决这个问题。在提供的html模板中，已经给出了。你所要做的只是引用一下就好了。
+
+到views/layouts/app.blade.php的</body>标签前加上
+
+...
+<script src="/assets/js/laravel.js"></script>
+</body>
+...
+将删除链接修改为
+
+<a href="{{route('issues.destroy', $issue->id)}}" data-method="delete" data-token="{{csrf_token()}}" data-confirm="Are you sure?" ...>Destroy</a>
+再到 IssuesController.php中 添加删除相关的代码
+
+public function destroy($id)
+{
+    Issue::destroy($id);
+    return redirect('/');
+}
+# 笔记五
+当代的网站不仅能够向访问者展示信息，也能去倾听访问者的声音。这个主要是通过 form 实现的。
+
+
+
+增加路由
+首页的 发布新活动 的按钮，链接改为
+
+<a href="{{route('issues.create')}}" ...>发布新活动</a>
+web.php路由 中添加
+
+Route::get('issues/create', 'IssuesController@create')->name('issues.create');
+注意：这一行路由要写在 get 'issues/{issue}' 的上面。这是因为larave的路由是从上往下匹配的，我们要让它先找到新增，再去找显示。
+
+controller中显示新增页面
+IssuesController.php 中添加
+
+public function create(){
+    return view('issues.create');
+}
+增加create页面
+然后创建 resources/views/issues/create.html.erb
+
+复制提供的issues_create.html，并后缀为blade.php。
+使用布局模板，相信大家都已经知道该怎么处理了。
+修改form的action="{{route('issues.store')}}"
+@extends('layouts.app')
+
+@section('content')
+    <div class="am-container">
+        <div class="header">
+            <div class="am-g">
+                <h1>添加新活动</h1>
+            </div>
+            <hr>
+        </div>
+
+        <form class="am-form" action="{{route('issues.store')}}" method="post">
+            <fieldset>
+                <div class="am-form-group">
+                    <label>标题</label>
+                    <input type="text" placeholder="输入活动标题" name="title">
+                </div>
+
+                <div class="am-form-group">
+                    <label>内容</label>
+                    <textarea rows="5" name="content"></textarea>
+                </div>
+
+                <button type="submit" class="am-btn am-btn-default">提交</button>
+            </fieldset>
+        </form>
+    </div>
+@endsection
+Tips:
+1. 目前注意的是method 和 action，因为他俩决定了表单的提交方式和要提交到哪里去。
+2. 另一个要注意的是表单中的name，他决定了laravel收到后，值对应的名字叫什么。
+
+浏览一下发现报错， Route [issues.store] not defined. 所以就知道 web.php 中应该怎么写了。
+
+添加路由
+
+Route::post('issues', 'IssuesController@store')->name('issues.store');
+接受数据
+这样，就要在 IssuesController.php 中添加
+
+public function store(Request $request)
+{
+    return $request->all();
+}
+点击提交后，又报错了。这又是laravel 为了防止 跨站请求伪造，而采用的自我保护机制了。
+
+所以我们要让laravel知道，当前提交表单的页面，是来自于他自己的。使用的方式就是
+https://laravel.com/docs/5.5/csrf
+
+要做的修改非常简单，就是到 form标签 中添加
+
+<form>
+    {{csrf_field()}}
+...
+</form
+再次提交，可以看到我们提交的数据。
+
+
+
+Tips:
+1. 这里显示的_token，就是刚才添加的csrf_field。只要有了这个值，laravel就会自动处理相关的安全问题。
+2. 如果你想和我一样显示漂亮的数据格式，请给chrome浏览器安装JSON-handle或者jsonView等插件。
+
+将数据添加到数据库中
+public function store(Request $request)
+{
+    Issue::create($request->all());
+    return redirect('/');
+}
+Issue.php模型中，加上content白名单
+
+protected $fillable = ['title', 'content'];
+这样再来提交，操作成功了。
