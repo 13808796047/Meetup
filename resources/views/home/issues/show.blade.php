@@ -2,9 +2,12 @@
 @section('content')
     <div class="issue-heading">
         <div class="am-container">
-            Laravel Meetup
-            <a type="button" href="{{route('issues.destroy',$issue->id)}}" data-method="delete" data-token="{{csrf_token()}}" data-confirm="确定删除吗?" class="am-btn am-btn-danger am-radius am-btn-sm">删除</a>
-            <a type="button" class="am-btn am-btn-primary am-radius am-btn-sm">Edit</a>
+            {{$issue->title}}
+            <a type="button" href="{{route('issues.destroy',$issue->id)}}" data-method="delete"
+               data-token="{{csrf_token()}}" data-confirm="确定删除吗?"
+               class="am-btn am-btn-danger am-radius am-btn-sm">删除</a>
+            <a type="button" href="{{route('issues.edit',$issue->id)}}"
+               class="am-btn am-btn-primary am-radius am-btn-sm">修改</a>
         </div>
     </div>
 
@@ -16,29 +19,32 @@
                 <div class="am-comment-main">
                     <header class="am-comment-hd">
                         <div class="am-comment-meta">
-                            <span class="am-comment-author">{{$issue->title}}</span>
+                            <span class="am-comment-author">author</span>
                         </div>
                     </header>
                     <div class="am-comment-bd"><p>{{$issue->content}}</p></div>
                 </div>
             </li>
+            @foreach($comments as $comment)
+                <li class="am-comment">
+                    <img src="{{$comment->avatar()}}" alt="" class="am-comment-avatar" width="48" height="48">
 
-            <li class="am-comment">
-                <img src="assets/img/avatar2.png" alt="" class="am-comment-avatar" width="48" height="48">
-
-                <div class="am-comment-main">
-                    <header class="am-comment-hd">
-                        <div class="am-comment-meta">
-                            <span class="am-comment-author">Pipi</span>
-                            about 12 hours ago
-                        </div>
-                    </header>
-                    <div class="am-comment-bd"><p>Love this site!</p></div>
-                </div>
-            </li>
+                    <div class="am-comment-main">
+                        <header class="am-comment-hd">
+                            <div class="am-comment-meta">
+                                <span class="am-comment-author">{{$comment->name}}</span>
+                                {{$comment->created_at}}
+                            </div>
+                        </header>
+                        <div class="am-comment-bd"><p>{{$comment->content}}</p></div>
+                    </div>
+                </li>
+            @endforeach
         </ul>
 
-        <form class="am-form" method="post">
+        <form class="am-form" method="post" action="{{route('comments.store')}}">
+            {{csrf_field()}}
+            <input type="hidden" name="issue_id" value="{{$issue->id}}">
             <fieldset>
                 <div class="am-form-group">
                     <label>用户名</label>
