@@ -11,6 +11,7 @@
         <form class="am-form" action="{{route('issues.update',$issue->id)}}" method="post">
             {{csrf_field()}}
             {{method_field('PUT')}}
+            <input type="hidden" name="user_id" value="{{Auth::id()}}">
             <fieldset>
                 <div class="am-form-group">
                     <label>标题</label>

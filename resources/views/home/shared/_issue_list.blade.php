@@ -2,7 +2,7 @@
     <li class="am-g am-list-item-desced am-list-item-thumbed am-list-item-thumb-left">
         <div class="am-u-sm-2 am-u-md-1 am-list-thumb">
             <a href="{{route('issues.show',$issue->id)}}">
-                <img src="/assets/img/avatar1.png" alt=""/>
+                <img src="{{$issue->user->avatar()}}" alt=""/>
             </a>
         </div>
 
@@ -13,7 +13,7 @@
 
             <div class="am-list-item-text">
                 <span class="am-badge am-badge-secondary am-radius">read</span>
-                <span class="meta-data">Aaron</span>
+                <span class="meta-data">{{$issue->user->name}}</span>
                 {{$issue->created_at}}
             </div>
         </div>

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Home;
 
-use App\Model\Issue;
+use App\Models\Issue;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
+use Auth;
 class IssuesController extends Controller
 {
     /**
@@ -15,7 +15,7 @@ class IssuesController extends Controller
      */
     public function index()
     {
-        $issues = Issue::orderBy('created_at', 'desc')->paginate(5);
+        $issues = Issue::with('user','comments')->orderBy('created_at', 'desc')->paginate(5);
         return view('home.issues.index')->with('issues', $issues);
     }
 
@@ -26,6 +26,9 @@ class IssuesController extends Controller
      */
     public function create()
     {
+        if (!Auth::check()){
+            return redirect('/')->with('alert','没有执行此操作的权限,请先登录!');
+        }
         return view('home.issues.create');
     }
 
@@ -38,7 +41,7 @@ class IssuesController extends Controller
     public function store(Request $request)
     {
         Issue::create($request->all());
-        return redirect('/');
+        return redirect('/')->with('notice','Issue 新增成功');
     }
 
     /**
@@ -47,10 +50,10 @@ class IssuesController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Issue $issue)
     {
 
-        $issue = Issue::find($id);
+
         $comments = $issue->comments;
         return view('home.issues.show',compact('issue','comments'));
     }
@@ -61,9 +64,9 @@ class IssuesController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Issue $issue)
     {
-        $issue = Issue::find($id);
+
 
         return view('home.issues.edit')->with('issue', $issue);
     }
@@ -75,11 +78,11 @@ class IssuesController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Issue $issue)
     {
-        $issue = Issue::find($id);
+
         $issue->update($request->all());
-        return redirect(route('issues.show', $id));
+        return redirect(route('issues.show', $issue->id))->with('notice', 'Issue 修改成功~');
     }
 
     /**
@@ -88,9 +91,9 @@ class IssuesController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Issue $issue)
     {
-        Issue::destroy($id);
-        return redirect('/');
+        Issue::delete();
+        return redirect('/')->with('alert', 'Issue 删除成功~');;
     }
 }

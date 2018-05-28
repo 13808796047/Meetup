@@ -6,7 +6,17 @@ a {
 a:hover {
     color: teal;
 }
+.am-nav > li.am-dropdown > a:focus, .am-nav > li.am-dropdown > a:hover {
+    background-color: teal;
+}
 
+.am-dropdown.am-active .am-btn-secondary.am-dropdown-toggle {
+    background-color: teal;
+}
+
+.am-topbar .am-topbar-right .am-dropdown-content a {
+    color: teal;
+}
 .am-topbar .am-topbar-right a {
     color: #fff;
 }
@@ -252,4 +262,7 @@ a:hover {
 
 .pagination-right {
     text-align: right;
+}
+.am-alert {
+    margin: 0;
 }

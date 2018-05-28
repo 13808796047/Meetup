@@ -8,6 +8,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="renderer" content="webkit">
     <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="/assets/vendor/amazeui/css/amazeui.min.css"/>
     <link rel="stylesheet" href="/assets/css/common.css">
 </head>
@@ -28,22 +29,46 @@
                 <li><a href="{{route('issues.index')}}">活动</a></li>
                 <li><a href="/about">关于</a></li>
             </ul>
+            @if(Auth::guest())
+                <div class="am-topbar-right">
+                    <a href="{{route('login')}}" class="am-btn am-btn-secondary am-topbar-btn am-btn-sm">
+                        <span class="am-icon-user"></span> 登录
+                    </a>
+                </div>
 
-            <div class="am-topbar-right">
-                <a href="login.html" class="am-btn am-btn-secondary am-topbar-btn am-btn-sm">
-                    <span class="am-icon-user"></span> Login
-                </a>
-            </div>
-
-            <div class="am-topbar-right">
-                <a href="sign_up.html" class="am-btn am-btn-primary am-topbar-btn am-btn-sm">
-                    <span class="am-icon-pencil"></span> Sign Up
-                </a>
-            </div>
+                <div class="am-topbar-right">
+                    <a href="{{route('register')}}" class="am-btn am-btn-primary am-topbar-btn am-btn-sm">
+                        <span class="am-icon-pencil"></span> 注册
+                    </a>
+                </div>
         </div>
     </div>
-</header>
+    @else
+        <div class="am-collapse am-topbar-collapse" id="topbar-collapse">
+            <ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list">
+                <li class="am-dropdown" data-am-dropdown>
+                    <a class="am-btn-secondary am-dropdown-toggle" data-am-dropdown-toggle href="javascript:;">
+                        <span class="am-icon-user"></span> {{Auth::user()->name}}
+                        <span class="am-icon-caret-down"></span>
+                    </a>
+                    <ul class="am-dropdown-content">
+                        <li>
+                            <a href="{{ url('/logout') }}"
+                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <span class="am-icon-power-off"></span> 退出
+                            </a>
 
+                            <form id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
+                                {{ csrf_field() }}
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    @endif
+</header>
+@include('home.shared._flash')
 @yield('content')
 
 <footer class="footer">
@@ -64,5 +89,6 @@
 <script src="/assets/vendor/amazeui/js/amazeui.min.js"></script>
 <script src="/assets/js/common.js"></script>
 <script src="/assets/js/laravel.js"></script>
+@yield('scripts')
 </body>
 </html>
