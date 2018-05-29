@@ -43,6 +43,11 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\Models\Issue');
     }
+    // 一个 user有很多 comments
+    public function comments()
+    {
+        return $this->hasMany('App\Models\Comment');
+    }
     /**
      * 用户头像
      * @return mixed|string

@@ -4,12 +4,12 @@
         <div class="am-container">
             {{$issue->title}}
             @if(Auth::check()&&Auth::user()==$issue->user)
-            <a type="button" href="{{route('issues.destroy',$issue->id)}}" data-method="delete"
-               data-token="{{csrf_token()}}" data-confirm="确定删除吗?"
-               class="am-btn am-btn-danger am-radius am-btn-sm">删除</a>
-            <a type="button" href="{{route('issues.edit',$issue->id)}}"
-               class="am-btn am-btn-primary am-radius am-btn-sm">修改</a>
-                @endif
+                <a type="button" href="{{route('issues.destroy',$issue->id)}}" data-method="delete"
+                   data-token="{{csrf_token()}}" data-confirm="确定删除吗?"
+                   class="am-btn am-btn-danger am-radius am-btn-sm">删除</a>
+                <a type="button" href="{{route('issues.edit',$issue->id)}}"
+                   class="am-btn am-btn-primary am-radius am-btn-sm">修改</a>
+            @endif
         </div>
     </div>
 
@@ -24,49 +24,27 @@
                             <span class="am-comment-author">{{$issue->user->name}}</span>
                         </div>
                     </header>
-                    <div class="am-comment-bd"><p>{{$issue->content}}</p></div>
+                    <div class="am-comment-bd"><p>{!! markdown($issue->content) !!}</p></div>
                 </div>
             </li>
             @foreach($comments as $comment)
-                <li class="am-comment">
-                    <img src="{{$comment->avatar()}}" alt="" class="am-comment-avatar" width="48" height="48">
-
-                    <div class="am-comment-main">
-                        <header class="am-comment-hd">
-                            <div class="am-comment-meta">
-                                <span class="am-comment-author">{{$comment->name}}</span>
-                                {{$comment->created_at}}
-                            </div>
-                        </header>
-                        <div class="am-comment-bd"><p>{{$comment->content}}</p></div>
-                    </div>
-                </li>
+                @include('home.shared._comment')
             @endforeach
         </ul>
         @if(Auth::check())
-        <form class="am-form" method="post" action="{{route('comments.store')}}">
-            {{csrf_field()}}
-            <input type="hidden" name="issue_id" value="{{$issue->id}}">
+            {!! Form::open(['route' => 'comments.store', 'class' => 'am-form']) !!}
+            {!! Form::hidden('issue_id', $issue->id) !!}
+            {!! Form::hidden('user_id', Auth::id()) !!}
             <fieldset>
                 <div class="am-form-group">
-                    <label>用户名</label>
-                    <input type="text" placeholder="输入用户名" name="name">
-                </div>
-
-                <div class="am-form-group">
-                    <label>邮箱</label>
-                    <input type="email" placeholder="输入邮箱" name="email">
-                </div>
-
-                <div class="am-form-group">
-                    <textarea rows="5" name="content"></textarea>
+                    {{ Form::textarea('content', null,  ['rows' => '5', 'placeholder' => '填写评论内容，支持markdown。']) }}
                 </div>
 
                 <p>
-                    <button type="submit" class="am-btn am-btn-default">提交</button>
+                    {{ Form::submit('提交', ['class' => 'am-btn am-btn-default', 'id'=>'store-comment']) }}
                 </p>
             </fieldset>
-        </form>
+            {!! Form::close() !!}
         @else
             <p>
                 <a href="{{route('login')}}" class="am-btn am-btn-secondary am-btn-block">
@@ -75,4 +53,22 @@
             </p>
         @endif
     </div>
+@endsection
+@section('scripts')
+    <script>
+        $(function () {
+            $("#store-comment").click(function () {
+                $.post("/comments", $("form").serialize(), function (data) {
+
+                    $(".am-comments-list").append(data);
+                    $("textarea").val('');
+                    // $('pre > code').each(function () {
+                    //     this
+                    // });
+                })
+
+                return false;
+            })
+        })
+    </script>
 @endsection

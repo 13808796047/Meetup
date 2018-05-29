@@ -10,7 +10,7 @@ class CommentsController extends Controller
 {
     public function store(Request $request)
     {
-        Comment::create($request->all());
-        return back()->with('notice', 'Comment 新增成功~');
+        $comment = Comment::create($request->all());
+        return view('home.shared._comment', compact('comment'));
     }
 }

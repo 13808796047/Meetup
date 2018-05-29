@@ -6,6 +6,7 @@ use App\Models\Issue;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Auth;
+use App\Http\Requests\StoreIssue, App\Http\Requests\UpdateIssue;
 class IssuesController extends Controller
 {
     /**
@@ -38,8 +39,9 @@ class IssuesController extends Controller
      * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreIssue $request)
     {
+
         Issue::create($request->all());
         return redirect('/')->with('notice','Issue 新增成功');
     }
@@ -54,8 +56,8 @@ class IssuesController extends Controller
     {
 
 
-        $comments = $issue->comments;
-        return view('home.issues.show',compact('issue','comments'));
+        $comments = $issue->comments()->with('user')->get();
+        return view('home.issues.show',compact('issue','comments','content'));
     }
 
     /**
@@ -64,7 +66,7 @@ class IssuesController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Issue $issue)
+    public function edit(Issue $issue )
     {
 
 
@@ -78,7 +80,7 @@ class IssuesController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Issue $issue)
+    public function update(UpdateIssue $request, Issue $issue)
     {
 
         $issue->update($request->all());
